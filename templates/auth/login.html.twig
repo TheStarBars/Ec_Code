@@ -5,25 +5,38 @@
 {% block body %}
     <div class="flex items-center justify-center grow bg-center bg-no-repeat page-bg">
         <div class="card max-w-[370px] w-full">
-            <form action="{{ path('auth.login') }}" class="card-body flex flex-col gap-5 p-10" id="sign_in_form" method="post">
+            <form action="{{ path('auth.login') }}" class="card-body flex flex-col gap-5 p-10" method="post">
+                <!-- CSRF Token -->
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <!-- Error Message (if exists) -->
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
+                {% endif %}
+
                 <div class="text-center mb-2.5">
                     <h3 class="text-lg font-medium text-gray-900 leading-none mb-2.5">
                         Connexion
                     </h3>
                     <div class="flex items-center justify-center font-medium">
-                       <span class="text-2sm text-gray-700 me-1.5">
-                        Pas de compte ?
-                       </span>
+                        <span class="text-2sm text-gray-700 me-1.5">
+                            Pas de compte ?
+                        </span>
                         <a class="text-2sm link" href="{{ path('auth.register') }}">
                             Inscription
                         </a>
                     </div>
                 </div>
+
+                <!-- Email Field -->
                 <div class="flex flex-col gap-1">
-                    <label for="email" class="form-label font-normal text-gray-900">Email</label>
-                    <input id="email" type="text" name="_username" class="input" placeholder="Adresse email" />
+                    <label for="username" class="form-label font-normal text-gray-900">Email</label>
+                    <input id="username" type="text" name="_username" class="input" placeholder="Adresse email" value="{{ last_username }}" required autofocus/>
                 </div>
+
+                <!-- Password Field -->
                 <div class="flex flex-col gap-1">
                     <div class="flex items-center justify-between gap-1">
                         <label class="form-label font-normal text-gray-900">
@@ -31,15 +44,24 @@
                         </label>
                     </div>
                     <div class="input" data-toggle-password="true">
-                        <input name="_password" placeholder="Mot de passe" type="password" value=""/>
+                        <input name="_password" placeholder="Mot de passe" type="password" value="" required />
                         <button class="btn btn-icon" data-toggle-password-trigger="true" type="button">
-                            <i class="ki-filled ki-eye text-gray-500 toggle-password-active:hidden">
-                            </i>
-                            <i class="ki-filled ki-eye-slash text-gray-500 hidden toggle-password-active:block">
-                            </i>
+                            <i class="ki-filled ki-eye text-gray-500 toggle-password-active:hidden"></i>
+                            <i class="ki-filled ki-eye-slash text-gray-500 hidden toggle-password-active:block"></i>
                         </button>
                     </div>
                 </div>
+
+                <!-- Remember Me (optional) -->
+                {# Uncomment this if you want to add the "Remember me" option #}
+                {#
+                <div class="checkbox mb-3">
+                    <input type="checkbox" name="_remember_me" id="_remember_me">
+                    <label for="_remember_me">Remember me</label>
+                </div>
+                #}
+
+                <!-- Submit Button -->
                 <button type="submit" class="btn btn-primary flex justify-center grow">Connexion</button>
             </form>
         </div>
