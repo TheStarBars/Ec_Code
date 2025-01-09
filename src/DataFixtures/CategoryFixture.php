@@ -57,7 +57,7 @@ class CategoryFixture extends Fixture
 
 
         // Iterate over the data and create entities
-        foreach ($data as $item) {
+        foreach ($data as $index => $item) {
             $category = new Category();
             $category->setName($item['name']);
             $category->setDescription($item['description']);
@@ -65,6 +65,9 @@ class CategoryFixture extends Fixture
             $category->setUpdatedAt($now);
 
             $manager->persist($category);
+
+            // Add a reference for later use
+            $this->addReference('category_' . $index, $category);
         }
 
         // Persist data to the database

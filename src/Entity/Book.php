@@ -20,7 +20,7 @@ class Book
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::BIGINT)]
+    #[ORM\Column(type: Types::BIGINT, nullable: false)]
     private ?string $category_id = null;
 
     #[ORM\Column]
@@ -34,6 +34,10 @@ class Book
 
     #[ORM\Column]
     private ?\DateTime $updated_at = null;
+
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'books')]
+    #[ORM\JoinColumn(name: 'category_id', referencedColumnName: 'id', nullable: false)]
+    private ?Category $category = null;
 
     public function getId(): ?int
     {
@@ -120,6 +124,18 @@ class Book
     public function setUpdatedAt(\DateTime $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }

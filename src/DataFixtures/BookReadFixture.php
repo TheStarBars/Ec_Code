@@ -2,11 +2,14 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Book;
 use App\Entity\BookRead;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class BookReadFixture extends Fixture
+class BookReadFixture extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -87,8 +90,8 @@ class BookReadFixture extends Fixture
         // Iterate over the data and create entities
         foreach ($data as $item) {
             $bookRead = new BookRead();
-            $bookRead->setUserId($item['user_id']);
-            $bookRead->setBookId($item['book_id']);
+            $bookRead->setUser($this->getReference('user_' . $item['user_id'] - 1 , User::class));
+            $bookRead->setBook($this->getReference('book_' . ($item['book_id'] - 1), Book::class));
             $bookRead->setRating($item['rating']);
             $bookRead->setRead($item['is_read']);
             $bookRead->setDescription($item['description']);
@@ -100,5 +103,11 @@ class BookReadFixture extends Fixture
 
         // Persist data to the database
         $manager->flush();
+    }
+    public function getDependencies(): array
+    {
+        return [
+            BookFixture::class, // Book doit être exécuté avant
+        ];
     }
 }

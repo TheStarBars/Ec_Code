@@ -3,10 +3,12 @@
 namespace App\DataFixtures;
 
 use App\Entity\Book;
+use App\Entity\Category;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class BookFixture extends Fixture
+class BookFixture extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -156,9 +158,15 @@ class BookFixture extends Fixture
         ];
 
         // Iterate over the data and create entities
-        foreach ($data as $item) {
+        foreach ($data as $index => $item) {
             $book = new Book();
-            $book->setCategoryId($item['category_id']);
+
+            $categoryReference = 'category_' . ($item['category_id'] - 1);
+            if (!$this->hasReference($categoryReference, Category::class)) {
+                throw new \LogicException("Category reference '$categoryReference' does not exist.");
+            }
+
+            $book->setCategory($this->getReference($categoryReference, Category::class));
             $book->setName($item['name']);
             $book->setDescription($item['description']);
             $book->setPages($item['pages']);
@@ -167,9 +175,17 @@ class BookFixture extends Fixture
             $book->setUpdatedAt($now);
 
             $manager->persist($book);
+
+            $this->addReference('book_' . $index, $book);
         }
 
-        // Persist data to the database
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            CategoryFixture::class,
+        ];
     }
 }

@@ -3,13 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[AllowDynamicProperties] #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -40,6 +42,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private ?string $plainPassword = null;
 
+    #[ORM\OneToMany(targetEntity: BookRead::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $bookReads;
+
+    public function __construct()
+    {
+        $this->bookReads = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -58,7 +68,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     public function getRoles(): array
@@ -99,5 +109,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;
+    }
+
+    public function getBookReads(): Collection
+    {
+        return $this->bookReads;
+    }
+
+    public function addBookRead(BookRead $bookRead): static
+    {
+        if (!$this->bookReads->contains($bookRead)) {
+            $this->bookReads->add($bookRead);
+            $bookRead->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBookRead(BookRead $bookRead): static
+    {
+        if ($this->bookReads->removeElement($bookRead) && $bookRead->getUser() === $this) {
+            $bookRead->setUser(null);
+        }
+
+        return $this;
     }
 }

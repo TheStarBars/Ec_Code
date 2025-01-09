@@ -14,10 +14,10 @@ class BookRead
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::INTEGER, nullable: false)]
     private ?int $user_id = null;
 
-    #[ORM\Column(type: Types::BIGINT)]
+    #[ORM\Column(type: Types::BIGINT, nullable: false)]
     private ?string $book_id = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, nullable: true)]
@@ -37,6 +37,14 @@ class BookRead
 
     #[ORM\Column]
     private ?\DateTime $updated_at = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'booksRead')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\ManyToOne(targetEntity: Book::class)]
+    #[ORM\JoinColumn(name: 'book_id', referencedColumnName: 'id', nullable: false)]
+    private ?Book $book = null;
 
     public function getId(): ?int
     {
@@ -135,6 +143,30 @@ class BookRead
     public function setUpdatedAt(\DateTime $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getBook(): ?Book
+    {
+        return $this->book;
+    }
+
+    public function setBook(?Book $book): static
+    {
+        $this->book = $book;
 
         return $this;
     }

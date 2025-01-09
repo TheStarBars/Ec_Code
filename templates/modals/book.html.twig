@@ -11,8 +11,11 @@
                         <div class="flex flex-col gap-1">
                             <label for="book" class="form-label font-normal text-gray-900">Livre</label>
                             <select id="book" class="select">
-                                <option>Livre 1</option>
-                                <option>Livre 2</option>
+                            {% for book in books %}
+                                <option>
+                                {{ book.name }}
+                                </option>
+                                {% endfor %}
                             </select>
                         </div>
 
