@@ -28,6 +28,9 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app.home')]
     public function index(): Response
     {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('auth.login');
+        }
         $userId     = 1;
         $booksRead  = $this->bookReadRepository->findByUserId($userId, false);
         $email = $this->security->getUser()->getUserIdentifier();

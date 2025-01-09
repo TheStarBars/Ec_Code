@@ -5,8 +5,10 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -14,6 +16,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RegistrationController extends AbstractController
 {
+    public function __construct(private Security $security)
+    {
+        $this->security = $security;
+    }
+
     #[Route('/register', name: 'auth.register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
@@ -44,6 +51,8 @@ class RegistrationController extends AbstractController
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Votre inscription a été réussie.');
+
+                $this->security->login($user);
                 return $this->redirectToRoute('app.home');
             }
         }
