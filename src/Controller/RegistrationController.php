@@ -1,4 +1,5 @@
 <?php
+// src/Controller/RegistrationController.php
 
 namespace App\Controller;
 
@@ -9,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 class RegistrationController extends AbstractController
 {
@@ -19,24 +20,36 @@ class RegistrationController extends AbstractController
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
+        if ($form->isSubmitted()) {
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
+            if($form->isValid()) {
+                $plainPassword = $form->get('password')->getData();
+                $email = $form->get('email')->getData();
+                $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
-            // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+                $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+                if ($existingUser) {
+                    $this->addFlash('error', "Cet email est déjà utilisé.");
+                    return $this->redirectToRoute('auth.register');
+                }
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+                $agreeTerms = $form->get('agreeTerms')->getData();
+                if (!$agreeTerms) {
+                    $this->addFlash('error', "Vous devez accepter les GCU.");
+                    return $this->redirectToRoute('auth.register');
+                }
 
-            // do anything else you need here, like send an email
 
-            return $this->redirectToRoute('app.home');
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Votre inscription a été réussie.');
+                return $this->redirectToRoute('app.home');
+            }
         }
 
         return $this->render('auth/register.html.twig', [
-            'registrationForm' => $form,
+            'registrationForm' => $form->createView(),
         ]);
     }
 }
