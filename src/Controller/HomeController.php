@@ -28,19 +28,19 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app.home')]
     public function index(): Response
     {
-        if (!$this->getUser()) {
+        $user = $this->security->getUser();
+        if (!$user) {
             return $this->redirectToRoute('auth.login');
         }
         $userId     = 1;
         $booksRead  = $this->bookReadRepository->findByUserId($userId, false);
-        $email = $this->security->getUser()->getUserIdentifier();
         $book = $this->bookRepository->findAll();
 
         // Render the 'hello.html.twig' template
         return $this->render('pages/home.html.twig', [
             'booksRead' => $booksRead,
             'name'      => 'Accueil', // Pass data to the view
-            'email'     => $email,
+            'user'     => $user,
             'books'     => $book,
         ]);
     }
