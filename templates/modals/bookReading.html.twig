@@ -1,15 +1,12 @@
-<div class="modal" data-modal="true" id="book_modal">
+<div class="modal" data-modal="true" id="book_reading_modal" data-mode="create" aria-hidden="true" aria-labelledby="modal-title">
     <div class="modal-content max-w-[600px] top-[15%]">
         <div class="modal-header py-4 px-5">
             <h3 class="modal-title">Ma lecture</h3>
         </div>
         <div class="modal-body p-0 pb-5">
             <div class="scrollable-y-auto" data-scrollable="true" data-scrollable-max-height="auto" data-scrollable-offset="300px">
-                <form id="book-form" method="post">
+                <form id="book-reading-form" method="post">
                     <div class="flex flex-col gap-5 p-5">
-                        <!-- Champ caché pour l'ID de la lecture -->
-                        <input type="hidden" name="book_read_id" id="book_read_id" />
-
                         <div class="flex flex-col gap-1">
                             <label for="book" class="form-label font-normal text-gray-900">Livre</label>
                             <select id="book" class="select" name="book">
@@ -21,28 +18,28 @@
 
                         <div class="flex flex-col gap-1">
                             <label class="form-label font-normal text-gray-900">Mes notes</label>
-                            <textarea name="description" class="textarea" placeholder="Notez-ici les idées importantes de l'oeuvre."></textarea>
+                            <textarea id="description" class="textarea" placeholder="Notez-ici les idées importantes de l'oeuvre."></textarea>
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label for="rating" class="form-label font-normal text-gray-900">Note</label>
                             <select id="rating" class="select" name="rating">
-                                <option>1.0</option>
-                                <option>1.5</option>
-                                <option>2.0</option>
-                                <option>2.5</option>
-                                <option>3.0</option>
-                                <option>3.5</option>
-                                <option>4.0</option>
-                                <option>4.5</option>
-                                <option>5.0</option>
+                                <option value="1.0">1.0</option>
+                                <option value="1.5">1.5</option>
+                                <option value="2.0">2.0</option>
+                                <option value="2.5">2.5</option>
+                                <option value="3.0">3.0</option>
+                                <option value="3.5">3.5</option>
+                                <option value="4.0">4.0</option>
+                                <option value="4.5">4.5</option>
+                                <option value="5.0">5.0</option>
                             </select>
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label class="switch">
                                 <span class="switch-label font-normal text-gray-900">Lecture terminée</span>
-                                <input name="check" type="checkbox" value="1" />
+                                <input id="check" type="checkbox" value="1" />
                             </label>
                         </div>
 

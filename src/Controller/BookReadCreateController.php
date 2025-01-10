@@ -7,25 +7,20 @@ use App\Entity\BookRead;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use function Symfony\Component\Clock\now;
 
-class BookReadController extends AbstractController
+class BookReadCreateController extends AbstractController
 {
     #[Route('/bookread/create', name: 'bookread_create', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $entityManager, Security $security): JsonResponse
+    public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $bookId = $request->request->get('book');
         $description = $request->request->get('description');
         $rating = $request->request->get('rating');
         $check = $request->request->get('check');
         $userId = $request->request->get('user_id'); // Récupérer l'ID de l'utilisateur
-
         // Validation des données
         if (empty($bookId) || empty($description) || empty($rating)) {
             return new JsonResponse(['success' => false, 'message' => 'Données manquantes.'], 400);

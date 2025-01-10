@@ -1,12 +1,50 @@
 <div class="card h-full">
     <div class="card-header">
         <h3 class="card-title">
-            Répartition de mes lectures
+            Répartition de mes Catégories préférer.
         </h3>
     </div>
     <div class="card-body flex flex-col gap-5">
         <figure>
-            <img src="{{  asset('media/charts/Radar_Sample.png') }}" alt="Radar Sample"/>
+            <div id="chart"></div>
         </figure>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    var data = {{ data|raw }};
+    const rating = data.map(item => item[1]); // Récupère les ratings
+    const categories = data.map(item => item[0]); // Récupère les catégories
+
+    console.log(categories);
+    console.log(rating);
+
+    var options = {
+        series: [{
+            name: "Ratings",
+            data: rating  // Les notes moyennes pour chaque catégorie
+        }],
+        chart: {
+            type: 'radar',
+            height: 350
+        },
+        xaxis: {
+            categories: categories
+        },
+        plotOptions: {
+            radar: {
+                size: 100,
+                polygons: {
+                    strokeColor: '#e8e8e8',
+                    fill: {
+                        colors: ['#f8f8f8', '#fff']
+                    }
+                }
+            }
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+</script>
