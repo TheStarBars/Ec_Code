@@ -1,4 +1,4 @@
-<div class="modal" data-modal="true" id="book_reading_modal" data-mode="create" aria-hidden="true" aria-labelledby="modal-title">
+<div class="modal" data-modal="true" id="book_reading_modal" aria-hidden="true" aria-labelledby="modal-title">
     <div class="modal-content max-w-[600px] top-[15%]">
         <div class="modal-header py-4 px-5">
             <h3 class="modal-title">Ma lecture</h3>
@@ -6,6 +6,7 @@
         <div class="modal-body p-0 pb-5">
             <div class="scrollable-y-auto" data-scrollable="true" data-scrollable-max-height="auto" data-scrollable-offset="300px">
                 <form id="book-reading-form" method="post">
+                    <input type="hidden" id="readbook" name="readbook">
                     <div class="flex flex-col gap-5 p-5">
                         <div class="flex flex-col gap-1">
                             <label for="book" class="form-label font-normal text-gray-900">Livre</label>
@@ -18,8 +19,7 @@
 
                         <div class="flex flex-col gap-1">
                             <label class="form-label font-normal text-gray-900">Mes notes</label>
-                            <textarea id="description" class="textarea" placeholder="Notez-ici les idées importantes de l'oeuvre."></textarea>
-                        </div>
+                            <textarea id="description" name="description" class="textarea" placeholder="Notez-ici les idées importantes de l'oeuvre."></textarea>                        </div>
 
                         <div class="flex flex-col gap-1">
                             <label for="rating" class="form-label font-normal text-gray-900">Note</label>

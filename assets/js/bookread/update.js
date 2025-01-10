@@ -1,57 +1,45 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Capture tous les liens de type data-modal-toggle
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.querySelector('#book_reading_modal');
+    const form = document.querySelector('#book-reading-form');
+    const modalBackdrop = document.querySelector('.modal-backdrop'); // Sélectionner l'overlay de la page
+    const body = document.querySelector('body'); // Le body pour gérer l'effet de blocage
+
+    // Ouvrir le modal avec les données
     document.querySelectorAll('[data-modal-toggle="#book_reading_modal"]').forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
+            const readBookId = this.dataset.readbook;
+            const bookId = this.dataset.book;
+            const description = this.dataset.description;
+            const rating = this.dataset.rating;
+            const checked = this.dataset.checked === 'checked';
 
-            console.log(this); // Vérifie l'élément cliqué
-            console.log(document.querySelector('#book_reading_modal')); // Vérifie si le modal est bien sélectionné
-            const bookId = this.getAttribute('data-book');
-            const description = this.getAttribute('data-description');
-            const rating = this.getAttribute('data-rating');
-            const checked = this.getAttribute('data-checked');
-            const bookReadId = this.getAttribute('data-id');
+            modal.querySelector('#readbook').value = readBookId || '';
+            modal.querySelector('#book').value = bookId || '';
+            modal.querySelector('#description').value = description || '';
+            modal.querySelector('#rating').value = rating || '1.0';
+            modal.querySelector('#check').checked = checked;
 
-            console.log('bookId:', bookId);
-            console.log('description:', description);
-            console.log('rating:', rating);
-            console.log('checked:', checked);
-
-            // Si les données sont présentes, remplir le modal
-            document.querySelector('#book').value = bookId || '';
-            document.querySelector('#description').value = description || '';  // Remplissage du champ description
-            document.querySelector('#check').checked = checked === 'checked';
-
-            const ratingValue = parseFloat(rating).toFixed(1); // Assure-toi que la note est bien formatée
-            const ratingSelect = document.querySelector('#rating');
-            let found = false;
-            Array.from(ratingSelect.options).forEach(option => {
-                if (option.value === ratingValue) {
-                    option.selected = true;
-                    found = true;
-                }
-            });
-            if (!found) {
-                console.log("La note " + ratingValue + " n'a pas été trouvée parmi les options.");
-            }
-
-            const modal = document.getElementById("book_reading_modal");
-            modal.style.display = 'block';
+            // Afficher le modal et ajouter l'overlay
+            modal.style.display = 'block'; // Afficher le modal
+            body.style.overflow = 'hidden'; // Désactiver le défilement de la page derrière le modal
+            modalBackdrop.style.display = 'block'; // Afficher l'overlay
         });
     });
 
-    // Capture la soumission du formulaire de mise à jour
-    document.querySelector('#book-reading-form').addEventListener('submit', function(e) {
-        e.preventDefault();  // Empêche la soumission classique du formulaire
-
-        // Assure que la description est incluse dans FormData
-        const descriptionField = document.querySelector('#description');
-        if (!descriptionField.value) {
-            console.log('Erreur: La description est vide.');
+    // Fermer le modal si on clique en dehors
+    window.addEventListener('click', function (e) {
+        if (e.target === modal) {
+            closeModal();
         }
+    });
 
-        // Envoie les données via AJAX vers la route /bookread/update
-        const formData = new FormData(this);  // Collecte toutes les données du formulaire
+    // Soumettre le formulaire
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
         fetch('/bookread/update', {
             method: 'POST',
             body: formData
@@ -59,16 +47,26 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Mise à jour réussie');
-                    // Ferme le modal après la mise à jour
-                    document.getElementById("book_reading_modal").style.display = 'none';
+                    // Ferme le modal
+                    modal.classList.remove('show');
+                    modal.style.display = 'none';
+                    if (modalBackdrop) {
+                        modalBackdrop.style.display = 'none';
+                    }
+
+                    // Réinitialise le formulaire
+                    form.reset();
+
+                    // Recharge la page pour refléter les nouvelles données
+                    window.location.reload();
                 } else {
-                    alert('Erreur lors de la mise à jour');
+                    console.error("Erreur lors de la création :", data.message);
                 }
             })
             .catch(error => {
-                console.error('Erreur AJAX:', error);
-                alert('Une erreur est survenue.');
+                console.error("Erreur AJAX : ", error);
+                alert("Une erreur s'est produite.");
             });
     });
 });
+

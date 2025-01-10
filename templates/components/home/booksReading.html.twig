@@ -35,10 +35,10 @@
                                     <a class="edit-book leading-none font-medium text-sm text-gray-900 hover:text-primary"
                                        href="#"
                                        data-modal-toggle="#book_reading_modal"
-                                       data-id="{{ bookRead.id }}"
+                                       data-readbook="{{ bookRead.id }}"
                                        data-book="{{ bookRead.book.id }}"
                                        data-description="{{ bookRead.description }}"
-                                       data-rating="{{ bookRead.rating }}"
+                                       data-rating="{{ bookRead.rating|number_format(1, '.', '') }}"
                                        data-checked="{{ bookRead.isRead ? 'checked' : '' }}">
                                         {{ bookRead.book.name }}
                                     </a>
