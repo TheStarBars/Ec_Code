@@ -32,8 +32,8 @@ class HomeController extends AbstractController
         if (!$user) {
             return $this->redirectToRoute('auth.login');
         }
-        $userId     = 1;
-        $booksRead  = $this->bookReadRepository->findByUserId($userId, false);
+        ;
+        $booksRead  = $this->bookReadRepository->findByUserId($this->security->getUser()->getId(), false);
         $book = $this->bookRepository->findAll();
 
         // Render the 'hello.html.twig' template
