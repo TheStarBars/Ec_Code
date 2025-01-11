@@ -35,9 +35,16 @@ class BookReadRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-    public function findAverageRatingsByCategory(): array
+
+
+
+    /**
+     * Trouve les évaluations moyennes des livres par catégorie.
+     *
+     * @return array Liste des catégories et leurs évaluations moyennes.
+     */
+    public function findAverageRatingsByCategory(int $userId): array
     {
-        // Récupérer toutes les catégories
         $categories = $this->categoryRepository->findAll();
 
         // Initialiser un tableau avec des valeurs par défaut (0) pour chaque catégorie
@@ -49,17 +56,18 @@ class BookReadRepository extends ServiceEntityRepository
             ];
         }
 
-        // Exécuter la requête pour récupérer les moyennes de rating par catégorie
         $qb = $this->createQueryBuilder('br')
             ->select('b.category_id', 'AVG(br.rating) as avg_rating')
             ->join('App\Entity\Book', 'b', 'WITH', 'b.id = br.book_id') // jointure entre book_read et book
-            ->where('br.is_read = 1')  // Utilisation du bon nom de champ 'is_read'
+            ->where('br.is_read = 1')
+            ->andWhere('br.user_id = :userId')
+            ->setParameter('userId', $userId)
             ->groupBy('b.category_id');
 
-        // Exécution de la requête et récupération des résultats
+
         $results = $qb->getQuery()->getResult();
 
-        // Mettre à jour les catégories existantes avec les notes moyennes récupérées
+        // Mettre à jour les catégories existantes avec les notes moyennes
         foreach ($results as $result) {
             $categoryId = (int) $result['category_id'];
             if (isset($ratingsByCategory[$categoryId])) {

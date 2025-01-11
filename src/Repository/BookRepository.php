@@ -41,7 +41,16 @@ class BookRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-    public function findByName($name)
+
+    /**
+     * Recherche des livres par titre.
+     *
+     * Cette méthode permet de trouver des livres dont le titre correspond au critère de recherche.
+     *
+     * @param string $name Le titre (ou partie du titre) du livre à rechercher.
+     * @return Book[] Un tableau d'objets Book correspondant au critère de recherche.
+     */
+    public function findByName(string $name): array
     {
         $qb = $this->createQueryBuilder('b')
             ->where('b.title LIKE :name')

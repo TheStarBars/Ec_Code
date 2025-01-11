@@ -1,38 +1,44 @@
-document.addEventListener("DOMContentLoaded", function() {
+/**
+ * Script exécuté une fois que le DOM est complètement chargé.
+ * Gère l'envoi d'un formulaire pour ajouter un livre via une requête AJAX.
+ */
+document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("book-form");
     const modal = document.getElementById("book_modal");
     const modalBackdrop = document.getElementById("modal-backdrop");
 
-    form.addEventListener("submit", function(e) {
+    /**
+     * Événement déclenché lors de la soumission du formulaire.
+     * Empêche la soumission par défaut, envoie les données via AJAX, et met à jour l'interface.
+     */
+    form.addEventListener("submit", function (e) {
         e.preventDefault();
-        console.log("form submitted");
+
         const formData = new FormData(form);
-        formData.append("user_id", userId); // Ajoute l'ID de l'utilisateur dans les données du formulaire
+        formData.append("user_id", userId);
 
         fetch("/bookread/create", {
             method: "POST",
-            body: formData
+            body: formData,
         })
-            .then(response => response.json())
-            .then(data => {
+            .then((response) => response.json())
+            .then((data) => {
                 if (data.success) {
                     // Ferme le modal
-                    modal.classList.remove('show');
-                    modal.style.display = 'none';
+                    modal.classList.remove("show");
+                    modal.style.display = "none";
                     if (modalBackdrop) {
-                        modalBackdrop.style.display = 'none';
+                        modalBackdrop.style.display = "none";
                     }
 
-                    // Réinitialise le formulaire
                     form.reset();
 
-                    // Recharge la page pour refléter les nouvelles données
                     window.location.reload();
                 } else {
                     console.error("Erreur lors de la création :", data.message);
                 }
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("Erreur AJAX : ", error);
                 alert("Une erreur s'est produite.");
             });

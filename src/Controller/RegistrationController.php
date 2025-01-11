@@ -16,20 +16,42 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private Security $security)
+    private Security $security;
+
+    // Injection de dépendances via le constructeur
+    public function __construct(Security $security)
     {
         $this->security = $security;
     }
 
+    /**
+     * Cette méthode permet de gérer l'inscription d'un nouvel utilisateur.
+     * Elle gère la création du formulaire d'inscription, la validation des données
+     * et l'enregistrement de l'utilisateur dans la base de données.
+     *
+     * - Le mot de passe est hashé avant d'être enregistré.
+     * - Un contrôle est effectué pour vérifier si l'email existe déjà.
+     * - L'utilisateur doit accepter les conditions d'utilisation.
+     * - Après validation, l'utilisateur est connecté automatiquement.
+     *
+     * @Route("/register", name="auth.register")
+     *
+     * @param Request $request
+     * @param UserPasswordHasherInterface $userPasswordHasher
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/register', name: 'auth.register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
+
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
-        if ($form->isSubmitted()) {
 
-            if($form->isValid()) {
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+
                 $plainPassword = $form->get('password')->getData();
                 $email = $form->get('email')->getData();
                 $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
@@ -46,13 +68,12 @@ class RegistrationController extends AbstractController
                     return $this->redirectToRoute('auth.register');
                 }
 
-
                 $entityManager->persist($user);
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Votre inscription a été réussie.');
-
                 $this->security->login($user);
+
                 return $this->redirectToRoute('app.home');
             }
         }

@@ -15,9 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
 {
-    private BookReadRepository $readBookRepository;
 
-    // Inject the repository via the constructor
     public function __construct(BookReadRepository $bookReadRepository, private readonly Security $security, BookRepository $bookRepository, CategoryRepository $categoryRepository, entityManagerInterface $em)
     {
         $this->bookReadRepository = $bookReadRepository;
@@ -27,28 +25,36 @@ class HomeController extends AbstractController
     }
 
     /**
-     * @throws Exception
+     * Affiche la page d'accueil avec les livres lus et non lus par l'utilisateur, ainsi que les évaluations moyennes par catégorie.
+     *
+     * Cette méthode vérifie si un utilisateur est connecté, récupère les livres lus et non lus,
+     * et les catégories associées aux livres. Elle passe ces informations à la vue pour l'affichage.
+     *
+     * @throws Exception Si une erreur liée à la base de données se produit.
+     *
+     * @return Response La réponse contenant la vue rendue de la page d'accueil.
      */
     #[Route('/', name: 'app.home')]
     public function index(): Response
     {
         $user = $this->security->getUser();
+
         if (!$user) {
             return $this->redirectToRoute('auth.login');
         }
-        ;
-        $booksNotRead  = $this->bookReadRepository->findByUserId($this->security->getUser()->getId(), false);
-        $booksRead  = $this->bookReadRepository->findByUserId($this->security->getUser()->getId(), true);
+
+        $booksNotRead  = $this->bookReadRepository->findByUserId($user->getId(), false);
+        $booksRead  = $this->bookReadRepository->findByUserId($user->getId(), true);
+
         $book = $this->bookRepository->findAll();
 
+        $data = $this->bookReadRepository->findAverageRatingsByCategory($user->getId());
 
-        $data = $this->bookReadRepository->findAverageRatingsByCategory();
-        // Render the 'hello.html.twig' template
         return $this->render('pages/home.html.twig', [
             'booksNotRead' => $booksNotRead,
-            'name'      => 'Accueil', // Pass data to the view
-            'user'     => $user,
-            'books'     => $book,
+            'name' => 'Accueil',
+            'user' => $user,
+            'books' => $book,
             'booksRead' => $booksRead,
             'data' => json_encode($data),
         ]);

@@ -13,6 +13,18 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class BookReadCreateController extends AbstractController
 {
+    /**
+     * Crée une nouvelle entrée de lecture dans la base de données.
+     *
+     * Cette méthode gère la création d'un enregistrement de lecture pour un utilisateur et un livre spécifiques.
+     * Elle valide les données reçues, vérifie l'existence du livre et de l'utilisateur,
+     * puis enregistre l'enregistrement dans la base de données.
+     *
+     * @param Request $request Objet HTTP contenant les données du formulaire.
+     * @param EntityManagerInterface $entityManager Gestionnaire d'entités pour les opérations en base de données.
+     *
+     * @return JsonResponse Une réponse JSON indiquant le succès ou l'échec de l'opération
+     */
     #[Route('/bookread/create', name: 'bookread_create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -20,8 +32,8 @@ class BookReadCreateController extends AbstractController
         $description = $request->request->get('description');
         $rating = $request->request->get('rating');
         $check = $request->request->get('check');
-        $userId = $request->request->get('user_id'); // Récupérer l'ID de l'utilisateur
-        // Validation des données
+        $userId = $request->request->get('user_id');
+
         if (empty($bookId) || empty($description) || empty($rating)) {
             return new JsonResponse(['success' => false, 'message' => 'Données manquantes.'], 400);
         }
@@ -36,18 +48,15 @@ class BookReadCreateController extends AbstractController
             return new JsonResponse(['success' => false, 'message' => 'Utilisateur non trouvé.'], 404);
         }
 
-        // Créer l'instance de BookRead
         $bookRead = new BookRead();
         $bookRead->setBook($book);
         $bookRead->setDescription($description);
         $bookRead->setRating((float)$rating);
         $bookRead->setRead(!empty($check) && $check === '1');
-        $bookRead->setUser($id_user); // Enregistrer l'utilisateur
+        $bookRead->setUser($id_user);
         $bookRead->setCreatedAt(new \DateTime('now'));
         $bookRead->setUpdatedAt(new \DateTime('now'));
 
-
-        // Sauvegarder
         $entityManager->persist($bookRead);
         $entityManager->flush();
 

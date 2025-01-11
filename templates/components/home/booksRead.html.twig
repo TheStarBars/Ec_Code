@@ -4,8 +4,7 @@
             Mes lectures terminées
         </h3>
         <div class="input input-sm max-w-48">
-            <i class="ki-filled ki-magnifier">
-            </i>
+            <i class="ki-filled ki-magnifier"></i>
             <input data-datatable-search="#read-books-table" placeholder="Rechercher" type="text"/>
         </div>
     </div>
@@ -16,22 +15,22 @@
                     <thead>
                     <tr>
                         <th class="min-w-[280px]">
-                            <span class="sort asc">
-                                <span class="sort-label">Livre</span>
-                                <span class="sort-icon"></span>
-                            </span>
+                                <span class="sort asc">
+                                    <span class="sort-label">Livre</span>
+                                    <span class="sort-icon"></span>
+                                </span>
                         </th>
                         <th class="min-w-[135px]">
-                            <span class="sort asc">
-                                <span class="sort-label">Catégorie</span>
-                                <span class="sort-icon"></span>
-                            </span>
+                                <span class="sort asc">
+                                    <span class="sort-label">Catégorie</span>
+                                    <span class="sort-icon"></span>
+                                </span>
                         </th>
                         <th class="min-w-[135px]">
-                            <span class="sort asc">
-                                <span class="sort-label">Note</span>
-                                <span class="sort-icon"></span>
-                            </span>
+                                <span class="sort asc">
+                                    <span class="sort-label">Note</span>
+                                    <span class="sort-icon"></span>
+                                </span>
                         </th>
                     </tr>
                     </thead>
@@ -40,60 +39,36 @@
                         <tr>
                             <td>
                                 <div class="flex flex-col gap-2">
-            <span class="text-2sm text-gray-700 font-normal leading-3">
-                {{ bookRead.book.name }}
-            </span>
+                                    <span class="text-2sm text-gray-700 font-normal leading-3">
+                                        {{ bookRead.book.name }}
+                                    </span>
                                 </div>
                             </td>
                             <td>{{ bookRead.book.category.name }}</td>
                             <td>
                                 <div class="rating">
-
-                                    {# Vérification et affichage des étoiles #}
-                                    {% if bookRead.rating >= 1 %}
-                                        <div class="rating-label checked">
+                                    {% for i in 1..5 %}
+                                        <div class="rating-label {% if bookRead.rating >= i %}checked{% endif %}">
                                             <i class="rating-on ki-solid ki-star text-base leading-none"></i>
                                         </div>
-                                    {% endif %}
-                                    {% if bookRead.rating >= 2 %}
-                                        <div class="rating-label checked">
-                                            <i class="rating-on ki-solid ki-star text-base leading-none"></i>
-                                        </div>
-                                    {% endif %}
-                                    {% if bookRead.rating >= 3 %}
-                                        <div class="rating-label checked">
-                                            <i class="rating-on ki-solid ki-star text-base leading-none"></i>
-                                        </div>
-                                    {% endif %}
-                                    {% if bookRead.rating >= 4 %}
-                                        <div class="rating-label checked">
-                                            <i class="rating-on ki-solid ki-star text-base leading-none"></i>
-                                        </div>
-                                    {% endif %}
-                                    {% if bookRead.rating >= 5 %}
-                                        <div class="rating-label checked">
-                                            <i class="rating-on ki-solid ki-star text-base leading-none"></i>
-                                        </div>
-                                    {% endif %}
+                                    {% endfor %}
                                 </div>
                             </td>
                         </tr>
                     {% endfor %}
-
                     </tbody>
                 </table>
             </div>
             <div class="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
                 <div class="flex items-center gap-2 order-2 md:order-1">
                     Show
-                    <select class="select select-sm w-16"
-                            data-datatable-size="true" name="perpage">
-                    </select>
+                    <select class="select select-sm w-16" data-datatable-size="true" name="perpage"></select>
                     per page
                 </div>
                 <div class="flex items-center gap-4 order-1 md:order-2">
                     <span data-datatable-info="true"></span>
-                    <div class="pagination" data-datatable-pagination="true">
+                    <div class="pagination hidden" data-datatable-pagination="true">
+                        <!-- Pagination here -->
                     </div>
                 </div>
             </div>
